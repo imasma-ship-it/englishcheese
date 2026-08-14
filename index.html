@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBER-MATCH 2088 // Future Gadget Match & Dance Party</title>
+  <meta name="description" content="Match 15 futuristic gadgets with their English names, choose your player (Andi, Tono, Budi, Jon, Wira), and win an animated victory dance party!">
+  
+  <link rel="stylesheet" href="css/design-system.css">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+
+  <!-- Starfield Matrix Background -->
+  <canvas id="canvas-bg"></canvas>
+  <div class="hud-grid-overlay"></div>
+
+  <div id="app">
+
+    <!-- Top Futuristic HUD Header -->
+    <header class="hud-header">
+      <div class="hud-brand">
+        <div class="hud-logo">⚡</div>
+        <div>
+          <div class="hud-title">CYBER-MATCH 2088</div>
+          <div class="hud-sub">FUTURE GADGET PICTURE & TEXT PAIRING</div>
+        </div>
+      </div>
+
+      <!-- Active Turn Player Banner -->
+      <div class="active-player-banner">
+        <div class="player-avatar-badge" id="header-player-avatar">🤖</div>
+        <div>
+          <span style="font-size: 0.72rem; color: var(--text-muted); display: block; line-height: 1;">CURRENT TURN</span>
+          <span class="player-name-text" id="header-player-name" style="color: var(--cyan);">Andi (0 Pairs)</span>
+        </div>
+      </div>
+
+      <!-- Right Action Controls -->
+      <div style="display: flex; gap: 8px;">
+        <button class="cyber-btn" id="btn-sound-toggle">🔊 SOUND ON</button>
+        <button class="cyber-btn" id="btn-fullscreen-toggle">⛶ FULLSCREEN</button>
+        <button class="cyber-btn cyber-btn-amber" data-route="select">👥 PLAYERS</button>
+      </div>
+    </header>
+
+    <!-- Main Viewport Stage -->
+    <main class="viewport-stage">
+
+      <!-- ========================================== -->
+      <!-- SCREEN 1: CHARACTER SELECTION -->
+      <!-- ========================================== -->
+      <section id="screen-select" class="game-screen active">
+        <div class="char-select-container">
+          <div>
+            <h1 class="char-title">CHOOSE YOUR OPERATOR</h1>
+            <p class="char-subtitle">
+              Pilih karaktermu untuk mulai mencocokkan 15 kartu gambar gadget masa depan dengan teks bahasa Inggrisnya!
+            </p>
+          </div>
+
+          <!-- 5 Character Cards -->
+          <div class="char-cards-grid">
+            <!-- 1. Andi -->
+            <div class="char-card selected" data-char="andi">
+              <div class="char-avatar" style="border-color: var(--p-andi); color: var(--p-andi);">🤖</div>
+              <div class="char-name" style="color: var(--p-andi);">ANDI</div>
+              <div class="char-role">Cyber Pilot</div>
+            </div>
+
+            <!-- 2. Tono -->
+            <div class="char-card" data-char="tono">
+              <div class="char-avatar" style="border-color: var(--p-tono); color: var(--p-tono);">⚡</div>
+              <div class="char-name" style="color: var(--p-tono);">TONO</div>
+              <div class="char-role">Quantum Tech</div>
+            </div>
+
+            <!-- 3. Budi -->
+            <div class="char-card" data-char="budi">
+              <div class="char-avatar" style="border-color: var(--p-budi); color: var(--p-budi);">🚀</div>
+              <div class="char-name" style="color: var(--p-budi);">BUDI</div>
+              <div class="char-role">Gadget Scout</div>
+            </div>
+
+            <!-- 4. Jon -->
+            <div class="char-card" data-char="jon">
+              <div class="char-avatar" style="border-color: var(--p-jon); color: var(--p-jon);">🔮</div>
+              <div class="char-name" style="color: var(--p-jon);">JON</div>
+              <div class="char-role">Holo Master</div>
+            </div>
+
+            <!-- 5. Wira -->
+            <div class="char-card" data-char="wira">
+              <div class="char-avatar" style="border-color: var(--p-wira); color: var(--p-wira);">🌟</div>
+              <div class="char-name" style="color: var(--p-wira);">WIRA</div>
+              <div class="char-role">Plasma Ranger</div>
+            </div>
+          </div>
+
+          <!-- Play Modes -->
+          <div style="display: flex; gap: 14px; margin-top: 10px;">
+            <button class="cyber-btn cyber-btn-primary" id="btn-play-battle" style="padding: 12px 28px; font-size: 1rem;">
+              ⚔️ 5-PLAYER BATTLE (ANDI, TONO, BUDI, JON, WIRA)
+            </button>
+            <button class="cyber-btn" id="btn-play-solo" style="padding: 12px 20px; font-size: 0.95rem;">
+              👤 SOLO MODE (SELECTED CHARACTER)
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 2: 15-PAIR MATCHING ARENA -->
+      <!-- ========================================== -->
+      <section id="screen-match" class="game-screen">
+        <div class="match-board-wrapper">
+          
+          <!-- Match Stats & Player Turn Pills Bar -->
+          <div class="match-stats-bar">
+            <div class="players-pill-row" id="players-stat-pills">
+              <!-- Rendered via JS -->
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span id="match-progress-text" style="font-family: var(--font-code); font-size: 0.9rem; color: var(--emerald); font-weight: bold;">
+                MATCHED: 0 / 15 PAIRS
+              </span>
+              <button class="cyber-btn" onclick="window.matchEngine.resetBoard()">🔄 RESHUFFLE</button>
+              <button class="cyber-btn cyber-btn-amber" data-route="dance">🕺 TEST DANCE</button>
+            </div>
+          </div>
+
+          <!-- Grammar Sentence Floating Toast -->
+          <div id="match-sentence-toast" style="display: none; background: rgba(14, 26, 48, 0.95); border: 1.5px solid var(--emerald); border-radius: var(--radius-sm); padding: 10px 18px; text-align: center; box-shadow: 0 0 20px var(--emerald-glow);">
+          </div>
+
+          <!-- Dual Deck: 15 Pictures Left & 15 Texts Right -->
+          <div class="dual-decks-grid">
+            
+            <!-- Left Deck: 15 Image Cards -->
+            <div class="deck-column">
+              <div class="deck-header">
+                <span>🖼️ 15 GADGET PICTURES</span>
+                <span style="font-family: var(--font-code); font-size: 0.75rem; color: var(--text-muted);">SELECT 1 PICTURE</span>
+              </div>
+              <div class="cards-scroll-grid" id="deck-images-grid">
+                <!-- 15 Image cards injected via JS -->
+              </div>
+            </div>
+
+            <!-- Right Deck: 15 Text Cards -->
+            <div class="deck-column">
+              <div class="deck-header">
+                <span>📝 15 GADGET NAMES & TEXT</span>
+                <span style="font-family: var(--font-code); font-size: 0.75rem; color: var(--text-muted);">MATCH WITH PICTURE</span>
+              </div>
+              <div class="cards-scroll-grid" id="deck-texts-grid">
+                <!-- 15 Text cards injected via JS -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 3: CYBER VICTORY DANCE STAGE -->
+      <!-- ========================================== -->
+      <section id="screen-dance" class="game-screen">
+        <div class="dance-stage-screen">
+          
+          <!-- Disco Lasers -->
+          <div class="disco-laser-left"></div>
+          <div class="disco-laser-right"></div>
+          
+          <!-- Confetti Fireworks Overlay -->
+          <canvas id="confetti-canvas"></canvas>
+
+          <div style="z-index: 20;">
+            <div class="winner-crown-badge">👑</div>
+            <h1 class="winner-banner-title" id="winner-name-banner">ANDI IS THE DANCE CHAMPION!</h1>
+            <p style="color: var(--text-secondary); font-size: 1rem; margin-top: 4px;">
+              Skor terbanyak berhasil diraih! Nikmati selebrasi Victory Cyber Dance!
+            </p>
+          </div>
+
+          <!-- Animated Cyber Dancer Rig -->
+          <div class="dance-character-rig dance-breakdance" id="dancing-robot-rig">
+            <div class="dancer-head" id="dancer-avatar-face">🤖</div>
+            <div class="dancer-torso" id="dancer-torso-label">ANDI</div>
+            <div class="dancer-arms">
+              <div class="arm-left">🦾</div>
+              <div class="arm-right">🦾</div>
+            </div>
+            <div class="dancer-legs">
+              <div>🦿</div>
+              <div>🦿</div>
+            </div>
+          </div>
+
+          <!-- Interactive Dance Style Buttons -->
+          <div class="dance-moves-bar">
+            <span style="font-family: var(--font-code); font-size: 0.8rem; color: var(--cyan); margin-right: 6px;">DANCE MOVES:</span>
+            <button class="cyber-btn dance-move-btn cyber-btn-amber" data-move="breakdance">🕺 BREAKDANCE SPIN</button>
+            <button class="cyber-btn dance-move-btn" data-move="robot">🤖 ROBOT WAVE</button>
+            <button class="cyber-btn dance-move-btn" data-move="moonwalk">🌙 CYBER MOONWALK</button>
+          </div>
+
+          <!-- Final Leaderboard Cards -->
+          <div class="dance-score-summary" id="dance-leaderboard-grid">
+            <!-- Leaderboard pills injected via JS -->
+          </div>
+
+          <!-- Actions -->
+          <div style="display: flex; gap: 12px; margin-top: 18px; z-index: 20;">
+            <button class="cyber-btn cyber-btn-primary" onclick="window.matchEngine.resetBoard(); window.app.switchScreen('match');" style="padding: 10px 24px; font-size: 0.95rem;">
+              🔄 PLAY AGAIN
+            </button>
+            <button class="cyber-btn" data-route="select" style="padding: 10px 20px;">
+              🏠 CHANGE PLAYERS
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/gadgets-data.js"></script>
+  <script src="js/players.js"></script>
+  <script src="js/match-engine.js"></script>
+  <script src="js/dance-reward.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
